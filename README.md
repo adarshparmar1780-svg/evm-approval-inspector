@@ -21,4 +21,8 @@ Input JSON uses `to` for the token contract, `data` for the full calldata, and o
 py -m unittest -v
 ```
 
+## What I observed
+
+The approval example decoded an `approve` call and flagged its maximum `uint256` allowance for review. The transfer example decoded a recipient and an amount of 42 raw units. The examples use placeholder addresses, and the amount is not converted into display tokens because the tool does not look up token decimals.
+
 AI-assisted initial draft. Review the code, run the examples and tests, and understand its limits before presenting the project as your work.
