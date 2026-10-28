@@ -42,6 +42,14 @@ class InspectTransactionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "ABI-padded"):
             inspect_transaction({"to": TOKEN, "data": "0xa9059cbb" + "f" * 64 + word(1)})
 
+    def test_rejects_negative_native_value(self):
+        with self.assertRaisesRegex(ValueError, "non-negative"):
+            inspect_transaction({
+                "to": TOKEN,
+                "data": "0xa9059cbb" + word(int(RECIPIENT, 16)) + word(1),
+                "value_wei": "-1",
+            })
+
 
 if __name__ == "__main__":
     unittest.main()
