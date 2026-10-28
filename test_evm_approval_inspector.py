@@ -50,6 +50,22 @@ class InspectTransactionTests(unittest.TestCase):
                 "value_wei": "-1",
             })
 
+    def test_rejects_boolean_native_value(self):
+        with self.assertRaisesRegex(ValueError, "non-negative decimal integer"):
+            inspect_transaction({
+                "to": TOKEN,
+                "data": "0xa9059cbb" + word(int(RECIPIENT, 16)) + word(1),
+                "value_wei": True,
+            })
+
+    def test_warns_when_native_value_is_attached(self):
+        result = inspect_transaction({
+            "to": TOKEN,
+            "data": "0xa9059cbb" + word(int(RECIPIENT, 16)) + word(1),
+            "value_wei": "1",
+        })
+        self.assertIn("ETH is also attached", result["native_value_note"])
+
 
 if __name__ == "__main__":
     unittest.main()
