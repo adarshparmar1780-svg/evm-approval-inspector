@@ -11,18 +11,15 @@ Requires Python 3.10 or newer; no third-party packages are used.
 ```powershell
 py .\evm_approval_inspector.py .\examples\approve-max.json
 py .\evm_approval_inspector.py .\examples\transfer.json
+py .\evm_approval_inspector.py --json .\examples\transfer.json
 ```
 
-Input JSON uses `to` for the token contract, `data` for the full calldata, and optional `value_wei` for attached ETH in raw wei. The two included examples use placeholder addresses and are not real transaction recommendations.
+Input JSON uses `to` for the token contract, `data` for the full calldata, and optional `value_wei` for attached ETH in raw wei. Add `--json` to print a machine-readable JSON report. The two included examples use placeholder addresses and are not real transaction recommendations.
 
 ## Check
 
 ```powershell
 py -m unittest -v
 ```
-
-## What I observed
-
-The approval example decoded an `approve` call and flagged its maximum `uint256` allowance for review. The transfer example decoded a recipient and an amount of 42 raw units. The examples use placeholder addresses, and the amount is not converted into display tokens because the tool does not look up token decimals.
 
 AI-assisted initial draft. Review the code, run the examples and tests, and understand its limits before presenting the project as your work.

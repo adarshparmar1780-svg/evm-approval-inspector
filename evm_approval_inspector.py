@@ -81,6 +81,7 @@ def main():
         description="Decode one ERC-20 approve or transfer call from a JSON transaction (offline, read-only)."
     )
     parser.add_argument("transaction_json", type=Path, help="JSON file with to, data, and optional value_wei")
+    parser.add_argument("--json", action="store_true", dest="json_output", help="print the decoded report as JSON")
     args = parser.parse_args()
 
     try:
@@ -90,11 +91,14 @@ def main():
         print(f"Could not inspect transaction: {exc}", file=sys.stderr)
         return 2
 
-    print("Offline ERC-20 call preview")
-    for key, value in report.items():
-        label = key.replace("_", " ").capitalize()
-        print(f"{label}: {value}")
-    print("This preview does not verify contract code, token decimals, signatures, or execution effects.")
+    if args.json_output:
+        print(json.dumps(report, indent=2))
+    else:
+        print("Offline ERC-20 call preview")
+        for key, value in report.items():
+            label = key.replace("_", " ").capitalize()
+            print(f"{label}: {value}")
+        print("This preview does not verify contract code, token decimals, signatures, or execution effects.")
     return 0
 
 

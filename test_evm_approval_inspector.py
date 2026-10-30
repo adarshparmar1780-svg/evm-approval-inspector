@@ -1,4 +1,8 @@
+import json
+import subprocess
+import sys
 import unittest
+from pathlib import Path
 
 from evm_approval_inspector import UINT256_MAX, inspect_transaction
 
@@ -73,6 +77,23 @@ class InspectTransactionTests(unittest.TestCase):
             "value_wei": "1",
         })
         self.assertIn("ETH is also attached", result["native_value_note"])
+
+    def test_json_flag_prints_parseable_report(self):
+        project_dir = Path(__file__).parent
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(project_dir / "evm_approval_inspector.py"),
+                "--json",
+                str(project_dir / "examples" / "transfer.json"),
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        report = json.loads(result.stdout)
+        self.assertEqual(report["function"], "transfer")
+        self.assertEqual(report["amount_raw"], "42")
 
 
 if __name__ == "__main__":
