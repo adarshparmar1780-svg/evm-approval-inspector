@@ -12,8 +12,9 @@ UINT256_MAX = (1 << 256) - 1
 ADDRESS_RE = re.compile(r"^0x[0-9a-fA-F]{40}$")
 HEX_RE = re.compile(r"^0x(?:[0-9a-fA-F]{2})*$")
 CALLS = {
-    "095ea7b3": ("approve", "spender", "allowance_raw"),
-    "a9059cbb": ("transfer", "recipient", "amount_raw"),
+    "095ea7b3": ("approve", ("spender",), "allowance_raw"),
+    "a9059cbb": ("transfer", ("recipient",), "amount_raw"),
+    "23b872dd": ("transferFrom", ("owner", "recipient"), "amount_raw"),
 }
 
 
@@ -50,20 +51,25 @@ def inspect_transaction(transaction):
     selector = data[2:10].lower()
     if selector not in CALLS:
         raise ValueError(f"unsupported selector 0x{selector}; only approve and transfer are decoded")
-    if len(data) != 138:
-        raise ValueError("call data must contain exactly two ABI words for this function")
+    function, address_names, amount_name = CALLS[selector]
+    expected_words = len(address_names) + 1
+    if len(data) != 10 + expected_words * 64:
+        word_count = "two" if expected_words == 2 else "three"
+        raise ValueError(f"call data must contain exactly {word_count} ABI words for this function")
 
-    function, address_name, amount_name = CALLS[selector]
     arguments = data[10:]
-    address = _address_word(arguments[:64])
-    amount = int(arguments[64:], 16)
+    addresses = [
+        _address_word(arguments[offset:offset + 64])
+        for offset in range(0, len(address_names) * 64, 64)
+    ]
+    amount = int(arguments[len(address_names) * 64:], 16)
     report = {
         "token_contract": token.lower(),
         "function": function,
-        address_name: address,
-        amount_name: str(amount),
-        "value_wei": str(value_wei),
     }
+    report.update(zip(address_names, addresses))
+    report[amount_name] = str(amount)
+    report["value_wei"] = str(value_wei)
 
     if function == "approve":
         report["allowance_note"] = (
@@ -73,12 +79,14 @@ def inspect_transaction(transaction):
         )
     if value_wei:
         report["native_value_note"] = "ETH is also attached to this call; verify why before signing"
+    if function == "transferFrom":
+        report["transfer_note"] = "Review the owner, recipient, and sender authorization; this tool cannot verify allowance offline"
     return report
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Decode one ERC-20 approve or transfer call from a JSON transaction (offline, read-only)."
+        description="Decode one ERC-20 approve, transfer, or transferFrom call from a JSON transaction (offline, read-only)."
     )
     parser.add_argument("transaction_json", type=Path, help="JSON file with to, data, and optional value_wei")
     parser.add_argument("--json", action="store_true", dest="json_output", help="print the decoded report as JSON")

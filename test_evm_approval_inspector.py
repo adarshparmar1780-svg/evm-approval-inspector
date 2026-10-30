@@ -34,6 +34,21 @@ class InspectTransactionTests(unittest.TestCase):
         self.assertEqual(result["recipient"], RECIPIENT)
         self.assertEqual(result["amount_raw"], "42")
 
+    def test_decodes_transfer_from_owner_recipient_and_amount(self):
+        result = inspect_transaction({
+            "to": TOKEN,
+            "data": "0x23b872dd" + word(int(SPENDER, 16)) + word(int(RECIPIENT, 16)) + word(75),
+        })
+        self.assertEqual(result["function"], "transferFrom")
+        self.assertEqual(result["owner"], SPENDER)
+        self.assertEqual(result["recipient"], RECIPIENT)
+        self.assertEqual(result["amount_raw"], "75")
+        self.assertIn("cannot verify allowance offline", result["transfer_note"])
+
+    def test_rejects_short_transfer_from_calldata(self):
+        with self.assertRaisesRegex(ValueError, "exactly three ABI words"):
+            inspect_transaction({"to": TOKEN, "data": "0x23b872dd"})
+
     def test_rejects_unsupported_selector(self):
         with self.assertRaisesRegex(ValueError, "unsupported selector"):
             inspect_transaction({"to": TOKEN, "data": "0xdeadbeef" + "0" * 128})
