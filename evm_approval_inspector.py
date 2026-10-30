@@ -47,6 +47,8 @@ def inspect_transaction(transaction):
         raise ValueError("'value_wei' must be a non-negative decimal integer") from exc
     if value_wei < 0:
         raise ValueError("'value_wei' must be non-negative")
+    if value_wei > UINT256_MAX:
+        raise ValueError("'value_wei' must fit in uint256")
 
     selector = data[2:10].lower()
     if selector not in CALLS:

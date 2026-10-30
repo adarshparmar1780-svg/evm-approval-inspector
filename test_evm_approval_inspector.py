@@ -92,6 +92,22 @@ class InspectTransactionTests(unittest.TestCase):
                 "value_wei": "one",
             })
 
+    def test_accepts_maximum_uint256_native_value(self):
+        result = inspect_transaction({
+            "to": TOKEN,
+            "data": "0xa9059cbb" + word(int(RECIPIENT, 16)) + word(1),
+            "value_wei": str(UINT256_MAX),
+        })
+        self.assertEqual(result["value_wei"], str(UINT256_MAX))
+
+    def test_rejects_native_value_above_uint256(self):
+        with self.assertRaisesRegex(ValueError, "fit in uint256"):
+            inspect_transaction({
+                "to": TOKEN,
+                "data": "0xa9059cbb" + word(int(RECIPIENT, 16)) + word(1),
+                "value_wei": str(UINT256_MAX + 1),
+            })
+
     def test_warns_when_native_value_is_attached(self):
         result = inspect_transaction({
             "to": TOKEN,
