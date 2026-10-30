@@ -2,6 +2,8 @@
 
 A small offline Python CLI that decodes ERC-20 `approve(address,uint256)`, `transfer(address,uint256)`, and `transferFrom(address,address,uint256)` calls. It prints the target token contract, relevant addresses, and amount in raw integer units. A max-`uint256` approval is called out for review.
 
+An `approve` call with an amount of zero is identified as setting the requested allowance to zero, following ERC-20's allowance overwrite behavior.
+
 This is a learning tool for inspecting transaction data before signing. It does not connect to a wallet, contact an RPC endpoint, sign or send transactions, inspect contract code, resolve token decimals, verify signatures, or simulate execution. A warning is a prompt to investigate, not proof that a contract is malicious. Never paste a seed phrase or private key into this tool.
 
 ## Run

@@ -26,6 +26,13 @@ class InspectTransactionTests(unittest.TestCase):
         self.assertEqual(result["spender"], SPENDER)
         self.assertIn("max uint256", result["allowance_note"])
 
+    def test_labels_zero_approval_as_zero_allowance(self):
+        result = inspect_transaction({
+            "to": TOKEN,
+            "data": "0x095ea7b3" + word(int(SPENDER, 16)) + word(0),
+        })
+        self.assertIn("sets the spender's allowance to zero", result["allowance_note"])
+
     def test_decodes_transfer_amount_as_raw_units(self):
         result = inspect_transaction({
             "to": TOKEN,

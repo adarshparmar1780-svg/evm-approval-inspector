@@ -75,6 +75,8 @@ def inspect_transaction(transaction):
         report["allowance_note"] = (
             "max uint256 allowance; review the spender and whether this approval is needed"
             if amount == UINT256_MAX
+            else "zero allowance; this call sets the spender's allowance to zero"
+            if amount == 0
             else "finite allowance; review the spender and raw amount"
         )
     if value_wei:
