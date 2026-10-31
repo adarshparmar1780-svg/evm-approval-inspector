@@ -151,5 +151,16 @@ class InspectTransactionTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn("duplicate JSON key: 'to'", result.stderr)
 
+    def test_rejects_noncanonical_decimal_native_value_strings(self):
+        for value in (" 1", "+1", "1_0"):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(ValueError, "non-negative decimal integer"):
+                    inspect_transaction({
+                        "to": TOKEN,
+                        "data": "0xa9059cbb" + word(int(RECIPIENT, 16)) + word(1),
+                        "value_wei": value,
+                    })
+
+
 if __name__ == "__main__":
     unittest.main()

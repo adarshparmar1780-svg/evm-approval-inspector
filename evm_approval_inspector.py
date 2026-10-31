@@ -50,6 +50,8 @@ def inspect_transaction(transaction):
     value_text = transaction.get("value_wei", "0")
     if not isinstance(value_text, (str, int)) or isinstance(value_text, bool):
         raise ValueError("'value_wei' must be a non-negative decimal integer")
+    if isinstance(value_text, str) and not re.fullmatch(r"[0-9]+", value_text):
+        raise ValueError("'value_wei' must be a non-negative decimal integer")
     try:
         value_wei = int(value_text, 10) if isinstance(value_text, str) else value_text
     except ValueError as exc:

@@ -17,7 +17,7 @@ py .\evm_approval_inspector.py --json .\examples\transfer.json
 py .\evm_approval_inspector.py .\examples\transfer-from.json
 ```
 
-Input JSON uses `to` for the token contract, `data` for the full calldata, and optional `value_wei` for attached ETH in raw wei. The value must be between zero and the maximum `uint256`. Add `--json` to print a machine-readable JSON report. The included examples use placeholder addresses and are not real transaction recommendations.
+Input JSON uses `to` for the token contract, `data` for the full calldata, and optional `value_wei` for attached ETH in raw wei. Duplicate JSON keys are rejected to avoid silently choosing between conflicting transaction fields. The value accepts decimal digits only and must be between zero and the maximum `uint256`. Add `--json` to print a machine-readable JSON report. The included examples use placeholder addresses and are not real transaction recommendations.
 
 The `transferFrom` preview shows the token owner, recipient, and raw amount. It cannot check whether the transaction sender has the required allowance. Function details follow the [ERC-20 specification](https://eips.ethereum.org/EIPS/eip-20).
 
