@@ -1,6 +1,7 @@
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -133,6 +134,22 @@ class InspectTransactionTests(unittest.TestCase):
         self.assertEqual(report["function"], "transfer")
         self.assertEqual(report["amount_raw"], "42")
 
+
+    def test_cli_rejects_duplicate_json_fields(self):
+        project_dir = Path(__file__).parent
+        with tempfile.TemporaryDirectory() as temp_dir:
+            transaction_path = Path(temp_dir) / "duplicate.json"
+            transaction_path.write_text(
+                '{"to":"' + TOKEN + '","to":"' + RECIPIENT + '","data":"0x"}',
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, str(project_dir / "evm_approval_inspector.py"), str(transaction_path)],
+                capture_output=True,
+                text=True,
+            )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("duplicate JSON key: 'to'", result.stderr)
 
 if __name__ == "__main__":
     unittest.main()

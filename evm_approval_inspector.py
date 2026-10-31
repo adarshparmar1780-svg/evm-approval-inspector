@@ -24,6 +24,15 @@ def _address_word(word):
     return "0x" + word[24:].lower()
 
 
+def _unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key!r}")
+        result[key] = value
+    return result
+
+
 def inspect_transaction(transaction):
     if not isinstance(transaction, dict):
         raise ValueError("input JSON must be an object")
@@ -97,7 +106,10 @@ def main():
     args = parser.parse_args()
 
     try:
-        transaction = json.loads(args.transaction_json.read_text(encoding="utf-8"))
+        transaction = json.loads(
+            args.transaction_json.read_text(encoding="utf-8"),
+            object_pairs_hook=_unique_object,
+        )
         report = inspect_transaction(transaction)
     except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
         print(f"Could not inspect transaction: {exc}", file=sys.stderr)
