@@ -115,7 +115,8 @@ class InspectTransactionTests(unittest.TestCase):
             "data": "0xa9059cbb" + word(int(RECIPIENT, 16)) + word(1),
             "value_wei": "1",
         })
-        self.assertIn("ETH is also attached", result["native_value_note"])
+        self.assertIn("nonpayable", result["native_value_note"])
+        self.assertIn("normally make this call revert", result["native_value_note"])
 
     def test_json_flag_prints_parseable_report(self):
         project_dir = Path(__file__).parent

@@ -93,7 +93,7 @@ def inspect_transaction(transaction):
             else "finite allowance; review the spender and raw amount"
         )
     if value_wei:
-        report["native_value_note"] = "ETH is also attached to this call; verify why before signing"
+        report["native_value_note"] = "standard ERC-20 functions are nonpayable; attached ETH will normally make this call revert"
     if function == "transferFrom":
         report["transfer_note"] = "Review the owner, recipient, and sender authorization; this tool cannot verify allowance offline"
     return report
