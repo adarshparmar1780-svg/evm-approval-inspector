@@ -63,7 +63,7 @@ def inspect_transaction(transaction):
 
     selector = data[2:10].lower()
     if selector not in CALLS:
-        raise ValueError(f"unsupported selector 0x{selector}; only approve and transfer are decoded")
+        raise ValueError(f"unsupported selector 0x{selector}; supported calls are approve, transfer, and transferFrom")
     function, address_names, amount_name = CALLS[selector]
     expected_words = len(address_names) + 1
     if len(data) != 10 + expected_words * 64:
