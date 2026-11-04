@@ -19,7 +19,7 @@ py .\evm_approval_inspector.py .\examples\transfer-from.json
 
 Input JSON uses `to` for the token contract, `data` for the full calldata, and optional `value_wei` for attached ETH in raw wei. Duplicate JSON keys are rejected to avoid silently choosing between conflicting transaction fields. The value accepts decimal digits only and must be between zero and the maximum `uint256`. Add `--json` to print a machine-readable JSON report. The included examples use placeholder addresses and are not real transaction recommendations.
 
-Standard ERC-20 methods are nonpayable, so the preview warns that attaching ETH will normally make a call revert. The tool cannot confirm how a nonstandard token contract handles the call.
+Standard ERC-20 methods are nonpayable, so the preview warns that attaching ETH will normally make a call revert. The tool cannot confirm how a nonstandard token contract handles the call. A zero address in a decoded argument is also called out for review; the tool cannot determine whether the target contract accepts it.
 
 The `transferFrom` preview shows the token owner, recipient, and raw amount. It cannot check whether the transaction sender has the required allowance. Function details follow the [ERC-20 specification](https://eips.ethereum.org/EIPS/eip-20).
 

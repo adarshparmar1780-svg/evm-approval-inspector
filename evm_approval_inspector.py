@@ -92,6 +92,10 @@ def inspect_transaction(transaction):
             if amount == 0
             else "finite allowance; review the spender and raw amount"
         )
+    zero_address = "0x" + "0" * 40
+    zero_fields = [name for name, address in zip(address_names, addresses) if address == zero_address]
+    if zero_fields:
+        report["address_note"] = "zero address in " + ", ".join(zero_fields) + "; confirm this is intended"
     if value_wei:
         report["native_value_note"] = "standard ERC-20 functions are nonpayable; attached ETH will normally make this call revert"
     if function == "transferFrom":
