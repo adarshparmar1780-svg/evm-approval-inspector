@@ -18,6 +18,13 @@ def word(value):
 
 
 class InspectTransactionTests(unittest.TestCase):
+    def test_warns_for_zero_token_contract_address(self):
+        result = inspect_transaction({
+            "to": "0x" + "0" * 40,
+            "data": "0xa9059cbb" + word(int(RECIPIENT, 16)) + word(42),
+        })
+        self.assertIn("token_contract", result["address_note"])
+
     def test_flags_max_approval(self):
         result = inspect_transaction({
             "to": TOKEN,
