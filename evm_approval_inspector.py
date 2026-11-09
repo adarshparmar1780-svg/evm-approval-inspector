@@ -93,7 +93,8 @@ def inspect_transaction(transaction):
             else "finite allowance; review the spender and raw amount"
         )
     zero_address = "0x" + "0" * 40
-    zero_fields = [name for name, address in zip(address_names, addresses) if address == zero_address]
+    checked_addresses = [("token_contract", token.lower()), *zip(address_names, addresses)]
+    zero_fields = [name for name, address in checked_addresses if address == zero_address]
     if zero_fields:
         report["address_note"] = "zero address in " + ", ".join(zero_fields) + "; confirm this is intended"
     if value_wei:
